@@ -45,8 +45,8 @@ pre-commit = [
 [project.entry-points."ocr_translatebox_data"]
 "box.easyocr" = "ocr_translate_easyocr:easyocr_box_model_data"
 
-[project.entry-points."ocr_translate.boc_models"]
-"easyocr.box" = "ocr_translate_easyocr.plugins:EasyOCRBoxModel"
+[project.entry-points."ocr_translate.box_models"]
+"easyocr.box" = "ocr_translate_easyocr.plugin:EasyOCRBoxModel"
 
 [tool.flit.module]
 name = "ocr_translate_easyocr"
