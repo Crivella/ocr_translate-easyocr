@@ -42,7 +42,7 @@ pre-commit = [
     "pylint-django~=2.5.3",
 ]
 
-[project.entry-points."ocr_translatebox_data"]
+[project.entry-points."ocr_translate.box_data"]
 "box.easyocr" = "ocr_translate_easyocr:easyocr_box_model_data"
 
 [project.entry-points."ocr_translate.box_models"]
