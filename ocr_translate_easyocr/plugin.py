@@ -160,7 +160,7 @@ class EasyOCRBoxModel(m.OCRBoxModel):
         image = image.convert('RGB')
         X,Y = image.size
 
-        if Y/X > 3.5:
+        if Y/X > 3.5 and Y > 2000:
             margin *= (Y/X)/3.5
             wths = 1.0
         results = self.reader.detect(
