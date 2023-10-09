@@ -99,10 +99,10 @@ class EasyOCRBoxModel(m.OCRBoxModel):
         """Merge a list of intersecting bounding boxes. All intersecting boxes are merged into a single box.
 
         Args:
-            bboxes (Iterable[Iterable[int]]): Iterable of bounding boxes in lrbt format.
+            bboxes (Iterable[Iterable[int, int, int, int]]): Iterable of bounding boxes in lrbt format.
 
         Returns:
-            list[tuple[int]]: List of merged bounding boxes in lrbt format.
+            list[tuple[int, int, int, int]]: List of merged bounding boxes in lbrt format (!!NOTE the lrbt -> lbrt).
         """
         res = []
         bboxes = np.array(bboxes)
@@ -153,7 +153,11 @@ class EasyOCRBoxModel(m.OCRBoxModel):
 
         # reader.recognize(image)
         image = image.convert('RGB')
-        results = self.reader.detect(np.array(image))
+        results = self.reader.detect(
+            np.array(image),
+            width_ths=1.5, height_ths=0.7, ycenter_ths=0.7,
+            add_margin=0.4
+            )
 
         # Axis rectangles
         bboxes = results[0][0]
