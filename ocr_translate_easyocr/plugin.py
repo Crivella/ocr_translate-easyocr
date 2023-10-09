@@ -155,8 +155,8 @@ class EasyOCRBoxModel(m.OCRBoxModel):
         image = image.convert('RGB')
         results = self.reader.detect(
             np.array(image),
-            width_ths=1.5, height_ths=0.7, ycenter_ths=0.7,
-            add_margin=0.4
+            width_ths=0.8, height_ths=0.8, ycenter_ths=0.8,
+            add_margin=0.15
             )
 
         # Axis rectangles
