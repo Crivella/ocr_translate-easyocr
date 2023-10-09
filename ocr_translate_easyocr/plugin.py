@@ -151,12 +151,22 @@ class EasyOCRBoxModel(m.OCRBoxModel):
         if options is None:
             options = {}
 
+        wths = options.get('width_ths', 0.7)
+        hths = options.get('height_ths', 0.7)
+        yths = options.get('ycenter_ths', 0.7)
+        margin = options.get('add_margin', 0.15)
+
         # reader.recognize(image)
         image = image.convert('RGB')
+        X,Y = image.size
+
+        if Y/X > 3.5:
+            margin *= (Y/X)/3.5
+            wths = 1.0
         results = self.reader.detect(
             np.array(image),
-            width_ths=0.8, height_ths=0.8, ycenter_ths=0.8,
-            add_margin=0.15
+            width_ths=wths, height_ths=hths, ycenter_ths=yths,
+            add_margin=margin
             )
 
         # Axis rectangles
