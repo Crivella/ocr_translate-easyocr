@@ -194,10 +194,11 @@ class EasyOCRBoxModel(m.OCRBoxModel):
 
         # Axis rectangles
         bboxes = results[0][0]
+        components = [(l,b,r,t) for l,r,b,t in bboxes]
 
         # Free (NOT IMPLEMENTED)
         # ...
 
         bboxes = self.merge_bboxes(bboxes, margin_x, margin_y)
 
-        return bboxes
+        return components, bboxes
