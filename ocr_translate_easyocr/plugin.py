@@ -56,6 +56,40 @@ class EasyOCRBoxModel(m.OCRBoxModel):
             torch.cuda.empty_cache()
 
     @staticmethod
+    def trim_overlapping_bboxes(
+            bboxes: list[tuple[int, int, int, int]],
+            ) -> list[tuple[int, int, int, int]]:
+        """Trim overlapping bounding boxes with the condition that the center of the box is inside the other box.
+
+        Args:
+            bboxes (list[tuple[int, int, int, int]], optional): List of bounding boxes in lrbt format.
+
+        Returns:
+            list[tuple[int, int, int, int]]: List of trimmed bounding boxes in lrbt format.
+        """
+        bboxes = np.array(bboxes)
+        num_bboxes = bboxes.shape[0]
+        centers = np.empty((num_bboxes, 2), dtype=np.float32)
+        centers[:, 0] = (bboxes[:, 0] + bboxes[:, 1]) / 2
+        centers[:, 1] = (bboxes[:, 2] + bboxes[:, 3]) / 2
+
+        # Sort by area
+        areas = (bboxes[:, 1] - bboxes[:, 0]) * (bboxes[:, 3] - bboxes[:, 2])
+        sorted_indices = np.argsort(areas)[::-1]
+
+        keep = []
+        for inner in sorted_indices:
+            # Check if center is inside another box
+            for outer in keep:
+                if (bboxes[outer, 0] <= centers[inner, 0] <= bboxes[outer, 1] and
+                        bboxes[outer, 2] <= centers[inner, 1] <= bboxes[outer, 3]):
+                    break
+            else:
+                keep.append(inner)
+
+        return bboxes[sorted(keep)].tolist()
+
+    @staticmethod
     def intersections(
             bboxes: Iterable[tuple[int, int, int, int]],
             margin_x: int = 5, margin_y: int = 5
@@ -194,6 +228,7 @@ class EasyOCRBoxModel(m.OCRBoxModel):
 
         # Axis rectangles
         bboxes = results[0][0]
+        bboxes = self.trim_overlapping_bboxes(bboxes)
         components = [(l,b,r,t) for l,r,b,t in bboxes]
 
         # Free (NOT IMPLEMENTED)

@@ -109,7 +109,7 @@ def test_easyocr_box_detection(monkeypatch, mock_called, image_pillow, easyocr_m
             self.res = None
         def detect(self, *args, **kwargs): # pylint: disable=missing-function-docstring,unused-argument
             self.called = True
-            self.res = [[(('l1', 'r1', 'b1', 't1'), ('l2', 'r2', 'b2', 't2'))]]
+            self.res = [[((1,2,3,4),(5,6,7,8))]]
             return self.res
 
     reader = MockReader()
@@ -122,13 +122,21 @@ def test_easyocr_box_detection(monkeypatch, mock_called, image_pillow, easyocr_m
     assert reader.called
 
     assert hasattr(mock_called, 'called')
-    assert mock_called.args[0][0][0] == 'l1'
-    assert mock_called.args[0][0][1] == 'r1'
-    assert mock_called.args[0][1][2] == 'b2'
+    assert mock_called.args[0][0][0] == 1
+    assert mock_called.args[0][0][1] == 2
+    assert mock_called.args[0][1][2] == 7
     assert mock_called.args[1] == int(image_pillow.size[0] * 0.01)
     assert mock_called.args[2] == int(image_pillow.size[1] * 0.01)
 
-    assert res[0][0][0] == 'l1'
-    assert res[0][0][1] == 'b1'
-    assert res[0][1][1] == 'b2'
+    assert res[0][0][0] == 1
+    assert res[0][0][1] == 3
+    assert res[0][1][1] == 7
     assert res[1] == 'mock_return'
+
+def test_easyocr_box_detection_overlap():
+    """Test easyocr box detection."""
+    bboxes = [(1,10,1,10),(8,11,8,11)]
+
+    trimmed = easyocr.EasyOCRBoxModel.trim_overlapping_bboxes(bboxes)
+
+    assert trimmed == [[1,10,1,10]]
