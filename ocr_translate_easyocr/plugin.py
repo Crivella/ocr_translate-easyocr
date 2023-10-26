@@ -96,6 +96,20 @@ class EasyOCRBoxModel(m.OCRBoxModel):
                 ptr.add(i)
                 ptr.add(j)
 
+        # Merge intersections. Needed depending on ordering of boxes eg  1-4-3-2 would result in [{1,4,3},{2,3}]
+        # instead of [{1,4,3,2}]
+        torm = []
+        for i,ptr1 in enumerate(res):
+            if ptr1 in torm:
+                continue
+            for ptr2 in res[i+1:]:
+                if ptr1.intersection(ptr2):
+                    ptr1.update(ptr2)
+                    torm.append(ptr2)
+
+        for ptr in torm:
+            res.remove(ptr)
+
         return res
 
     @staticmethod
