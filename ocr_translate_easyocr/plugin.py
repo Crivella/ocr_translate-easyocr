@@ -167,7 +167,7 @@ class EasyOCRBoxModel(m.OCRBoxModel):
         bboxes = np.array(bboxes)
         inters = EasyOCRBoxModel.intersections(bboxes, margin_x, margin_y)
 
-        lst = list(range(len(bboxes)))
+        lst = set(range(len(bboxes)))
 
         torm = set()
         for app in inters:
@@ -178,15 +178,21 @@ class EasyOCRBoxModel(m.OCRBoxModel):
             b = data[:,2].min()
             t = data[:,3].max()
 
-            res.append([l,b,r,t])
+            ptr = {}
+            ptr['merged'] = [l,b,r,t]
+            ptr['single'] = [bboxes[i] for i in app]
+            ptr['single'] = [[l,b,r,t] for l,r,b,t in ptr['single']]
+            res.append(ptr)
 
             torm = torm.union(app)
 
-        for i in lst:
-            if i in torm:
-                continue
+        for i in lst.difference(torm):
             l,r,b,t = bboxes[i]
-            res.append([l,b,r,t])
+            # res.append([l,b,r,t])
+            ptr = {}
+            ptr['merged'] = [l,b,r,t]
+            ptr['single'] = [[l,b,r,t]]
+            res.append(ptr)
 
         return res
 
@@ -229,11 +235,11 @@ class EasyOCRBoxModel(m.OCRBoxModel):
         # Axis rectangles
         bboxes = results[0][0]
         bboxes = self.trim_overlapping_bboxes(bboxes)
-        components = [(l,b,r,t) for l,r,b,t in bboxes]
+        # components = [(l,b,r,t) for l,r,b,t in bboxes]
 
         # Free (NOT IMPLEMENTED)
         # ...
 
         bboxes = self.merge_bboxes(bboxes, margin_x, margin_y)
 
-        return components, bboxes
+        return bboxes
