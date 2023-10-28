@@ -18,6 +18,8 @@
 ###################################################################################
 """Tests for easyocr plugin."""
 
+import pytest
+
 from ocr_translate_easyocr import plugin as easyocr
 
 boxes = [
@@ -38,6 +40,8 @@ boxes = [
 
     ((10,10,30,30), (29,29,51,40), (50,10,60,30)), # 3x intersection
     ((10,10,30,30), (29,29,51,40), (60,10,70,30)), # 2x intersection + 1
+    # Test for case: 1-4-3-2 would result in [{1,4,3},{2,3}]
+    ((10,1,20,2),(40,1,50,2),(30,1,40,2),(20,1,30,2),),
 ]
 ids = [
         'b2_inside_b1',
@@ -53,6 +57,7 @@ ids = [
         'int_nocorners',
         '3x_intersection',
         '2x_intersection_+_1',
+        '1-4-3-2_case',
 ]
 
 def test_intersection_merge(data_regression):
@@ -67,8 +72,11 @@ def test_intersection_merge(data_regression):
         ptr['box_lst'] = boxes_lrbt
         ptr['intersection'] = easyocr.EasyOCRBoxModel.intersections(boxes_lrbt)
         merge = easyocr.EasyOCRBoxModel.merge_bboxes(boxes_lrbt)
-        merge = [[int(_) for _ in el] for el in merge]
-        ptr['merge'] = merge
+        merged = [[int(_) for _ in el['merged']] for el in merge]
+        single = [[int(_) for _ in box] for el in merge for box in el['single']]
+
+        ptr['single'] = single
+        ptr['merge'] = merged
         res.append(ptr)
 
     data_regression.check({'res': res})
@@ -95,25 +103,42 @@ def test_unload_box_model_easyocr_gpu(monkeypatch, mock_called, easyocr_model):
     easyocr_model.unload()
     assert hasattr(mock_called, 'called')
 
-def test_easyocr_box_detextion(monkeypatch, mock_called, image_pillow, easyocr_model):
+@pytest.mark.parametrize('mock_called', ['mock_return'], indirect=True)
+def test_easyocr_box_detection_merge_inputs(monkeypatch, mock_reader, mock_called, image_pillow, easyocr_model):
     """Test easyocr box detection."""
-    class MockReader(): # pylint: disable=missing-class-docstring
-        def __init__(self):
-            self.called = False
-            self.res = None
-        def detect(self, *args, **kwargs): # pylint: disable=missing-function-docstring,unused-argument
-            self.called = True
-            self.res = (('TARGET', 'other1'), 'other2')
-            return self.res
-
-    reader = MockReader()
-    easyocr_model.reader = reader
-
+    reader = mock_reader()
+    monkeypatch.setattr(easyocr_model, 'reader', reader)
     monkeypatch.setattr(easyocr_model, 'merge_bboxes', mock_called)
 
-    easyocr_model._box_detection(image_pillow) # pylint: disable=protected-access
+    res = easyocr_model._box_detection(image_pillow) # pylint: disable=protected-access
 
     assert reader.called
 
     assert hasattr(mock_called, 'called')
-    assert mock_called.args[0] == 'TARGET'
+    assert mock_called.args[0][0][0] == mock_reader.res[0][0][0][0]
+    assert mock_called.args[0][0][1] == mock_reader.res[0][0][0][1]
+    assert mock_called.args[0][1][2] == mock_reader.res[0][0][1][2]
+    assert mock_called.args[1] == int(image_pillow.size[0] * 0.01)
+    assert mock_called.args[2] == int(image_pillow.size[1] * 0.01)
+
+    assert res == 'mock_return'
+
+def test_easyocr_box_detection(monkeypatch, mock_reader, image_pillow, easyocr_model):
+    """Test easyocr box detection."""
+    reader = mock_reader()
+    monkeypatch.setattr(easyocr_model, 'reader', reader)
+
+    res = easyocr_model._box_detection(image_pillow) # pylint: disable=protected-access
+
+    assert reader.called
+
+    assert 'single' in res[0]
+    assert 'merged' in res[0]
+
+def test_easyocr_box_detection_overlap():
+    """Test easyocr box detection."""
+    bboxes = [(1,10,1,10),(8,11,8,11)]
+
+    trimmed = easyocr.EasyOCRBoxModel.trim_overlapping_bboxes(bboxes)
+
+    assert trimmed == [[1,10,1,10]]

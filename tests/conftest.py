@@ -83,3 +83,16 @@ def mock_called(request):
         mock_call.expected = request.param
 
     return mock_call
+
+@pytest.fixture(scope='function')
+def mock_reader():
+    """Mock easyocr reader."""
+    class MockReader(): # pylint: disable=missing-class-docstring
+        res = [[((1,2,3,4),(5,6,7,8))]]
+        def __init__(self):
+            self.called = False
+        def detect(self, *args, **kwargs): # pylint: disable=missing-function-docstring,unused-argument
+            self.called = True
+            return MockReader.res
+
+    return MockReader
