@@ -67,7 +67,7 @@ class EasyOCRBoxModel(m.OCRBoxModel):
         Returns:
             list[tuple[int, int, int, int]]: List of trimmed bounding boxes in lrbt format.
         """
-        bboxes = np.array(bboxes)
+        bboxes = np.array(bboxes).reshape(-1,4)
         num_bboxes = bboxes.shape[0]
         centers = np.empty((num_bboxes, 2), dtype=np.float32)
         centers[:, 0] = (bboxes[:, 0] + bboxes[:, 1]) / 2
