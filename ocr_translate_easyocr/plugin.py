@@ -31,6 +31,52 @@ logger = logging.getLogger('plugin')
 
 class EasyOCRBoxModel(m.OCRBoxModel):
     """OCRtranslate plugin to allow usage of easyocr for box detection."""
+    ALLOWED_OPTIONS = {
+        **m.OCRBoxModel.ALLOWED_OPTIONS,
+        'margin_x_percent': {
+            'type': float,
+            'default':  0.01,
+            'description': 'Percentage of the image width to use as margin for merging boxes during detection.',
+        },
+        'margin_y_percent': {
+            'type': float,
+            'default':  0.01,
+            'description': 'Percentage of the image height to use as margin for merging boxes during detection.',
+        },
+        'width_ths': {
+            'type': float,
+            'default':  0.0,
+            'description': (
+                'easyocr - Maximum horizontal distance to merge boxes. '
+                'WARNING: Value used to work properly with single/merged boxes, touch at your own risk.'
+            )
+        },
+        'height_ths': {
+            'type': float,
+            'default':  0.0,
+            'description': (
+                'easyocr - Maximum different in box height. Boxes with very different text size should not be merged. '
+                'WARNING: Value used to work properly with single/merged boxes, touch at your own risk.'
+            )
+        },
+        'ycenter_ths': {
+            'type': float,
+            'default':  0.0,
+            'description': (
+                'easyocr - Maximum shift in y direction. Boxes with different level should not be merged. '
+                'WARNING: Value used to work properly with single/merged boxes, touch at your own risk.'
+                )
+        },
+        'add_margin': {
+            'type': float,
+            'default':  0.1,
+            'description': (
+                'easyocr - Extend bounding boxes in all direction by certain value. '
+                'This is important for language with complex script (E.g. Thai). '
+                'WARNING: Value used to work properly with single/merged boxes, touch at your own risk.'
+                ),
+        },
+    }
     class Meta: # pylint: disable=missing-class-docstring
         proxy = True
 
@@ -216,8 +262,12 @@ class EasyOCRBoxModel(m.OCRBoxModel):
         if options is None:
             options = {}
 
-        mxp = options.get('margin_x_percent', 0.01)
-        myp = options.get('margin_y_percent', 0.01)
+        mxp = float(options.get('margin_x_percent', 0.01))
+        myp = float(options.get('margin_y_percent', 0.01))
+        width_ths = float(options.get('width_ths', 0))
+        height_ths = float(options.get('height_ths', 0))
+        ycenter_ths = float(options.get('ycenter_ths', 0))
+        add_margin = float(options.get('add_margin', 0.1))
 
         X,Y = image.size
 
@@ -228,8 +278,10 @@ class EasyOCRBoxModel(m.OCRBoxModel):
 
         results = self.reader.detect(
             np.array(image),
-            width_ths=0, height_ths=0, ycenter_ths=0,
-            add_margin=0.1
+            width_ths=width_ths,
+            height_ths=height_ths,
+            ycenter_ths=ycenter_ths,
+            add_margin=add_margin
             )
 
         # Axis rectangles
