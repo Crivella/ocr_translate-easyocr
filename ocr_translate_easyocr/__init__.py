@@ -18,7 +18,7 @@
 ###################################################################################
 """Plugins to enable usage of Easyocr in ocr_translate"""
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 
 easyocr_box_model_data = {
     'name': 'easyocr',

@@ -42,9 +42,9 @@ jobs:
           timeout_minutes: 10
           command: >-
             pip install
-              --index-url https://test.pypi.org/simple/
-              --extra-index-url https://pypi.org/simple/
-              ocr_translate_easyocr==${{ steps.get_version.outputs.VERSION }}
+            --index-url https://test.pypi.org/simple/
+            --extra-index-url https://pypi.org/simple/
+            ocr_translate_easyocr==${{ steps.get_version.outputs.VERSION }}
 
       - name: Build and publish on PyPI
         run: >
