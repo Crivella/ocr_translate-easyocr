@@ -57,7 +57,7 @@ def image_pillow():
     npimg = np.random.randint(0,255,(25,25,3), dtype=np.uint8)
     return Image.fromarray(npimg)
 
-@pytest.fixture()
+@pytest.fixture(scope='function')
 def easyocr_model() -> easyocr.EasyOCRBoxModel:
     """OCRBoxModel database object."""
     easyocr_model_dict = {

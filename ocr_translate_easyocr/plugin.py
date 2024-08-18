@@ -19,6 +19,7 @@
 """ocr_translate plugin to allow loading of easyocr models."""
 import logging
 import os
+from pathlib import Path
 from typing import Iterable
 
 import easyocr
@@ -86,6 +87,16 @@ class EasyOCRBoxModel(m.OCRBoxModel):
 
         self.reader = None
         self.dev = os.environ.get('DEVICE', 'cpu')
+
+        if 'EASYOCR_PREFIX' in os.environ:
+            self.data_dir = Path(os.environ.get('EASYOCR_PREFIX'))
+        elif 'OCT_BASE_DIR' in os.environ:
+            self.data_dir = Path(os.environ.get('OCT_BASE_DIR')) / 'models' / 'easyocr'
+        else:
+            raise ValueError('No EASYOCR_PREFIX or OCT_BASE_DIR environment variable found.')
+        self.data_dir.mkdir(exist_ok=True, parents=True)
+        os.environ['EASYOCR_MODULE_PATH'] = str(self.data_dir)
+
 
     def load(self):
         """Load the model into memory."""

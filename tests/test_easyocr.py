@@ -18,6 +18,8 @@
 ###################################################################################
 """Tests for easyocr plugin."""
 
+from pathlib import Path
+
 import pytest
 
 from ocr_translate_easyocr import plugin as easyocr
@@ -59,6 +61,40 @@ ids = [
         '2x_intersection_+_1',
         '1-4-3-2_case',
 ]
+
+@pytest.fixture(autouse=True)
+def base(monkeypatch, tmpdir) -> Path:
+    """Mock base classes."""
+    tmp = str(tmpdir / 'base')
+    monkeypatch.setenv('OCT_BASE_DIR', tmp)
+    return Path(tmp)
+
+@pytest.fixture()
+def prefix(monkeypatch, tmpdir) -> Path:
+    """Mock base classes."""
+    tmp = str(tmpdir / 'prefix')
+    monkeypatch.setenv('EASYOCR_PREFIX', tmp)
+    return Path(tmp)
+
+def test_env_none(monkeypatch):
+    """Test that no env set causes ValueError."""
+    monkeypatch.delenv('OCT_BASE_DIR', raising=False)
+    with pytest.raises(ValueError):
+        easyocr.EasyOCRBoxModel()
+
+def test_env_easyocr_prefix(prefix):
+    """Test that the EASYOCR_PREFIX environment variable is set."""
+    assert not prefix.exists()
+    cls = easyocr.EasyOCRBoxModel()
+    assert cls.data_dir == prefix
+    assert prefix.exists()
+
+def test_env_base_dir(base):
+    """Test that the OCT_BASE_DIR environment variable is set."""
+    assert not base.exists()
+    cls = easyocr.EasyOCRBoxModel()
+    assert str(cls.data_dir).startswith(str(base))
+    assert base.exists()
 
 def test_intersection_merge(data_regression):
     """Test intersections function."""
