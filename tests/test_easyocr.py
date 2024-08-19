@@ -89,7 +89,16 @@ def test_env_easyocr_prefix(prefix):
     assert cls.data_dir == prefix
     assert prefix.exists()
 
-def test_env_base_dir(base):
+def test_env_base_dir(monkeypatch, prefix, mock_called):
+    """Test that the OCT_BASE_DIR environment variable is set."""
+    assert not prefix.exists()
+    monkeypatch.setattr(easyocr.easyocr, 'Reader', mock_called)
+    cls = easyocr.EasyOCRBoxModel()
+    cls.load()
+    assert mock_called.called
+    assert mock_called.kwargs['model_storage_directory'] == str(prefix)
+
+def test_load_data_dir(base):
     """Test that the OCT_BASE_DIR environment variable is set."""
     assert not base.exists()
     cls = easyocr.EasyOCRBoxModel()

@@ -95,13 +95,16 @@ class EasyOCRBoxModel(m.OCRBoxModel):
         else:
             raise ValueError('No EASYOCR_PREFIX or OCT_BASE_DIR environment variable found.')
         self.data_dir.mkdir(exist_ok=True, parents=True)
-        os.environ['EASYOCR_MODULE_PATH'] = str(self.data_dir)
-
 
     def load(self):
         """Load the model into memory."""
         logger.info(f'Loading BOX model: {self.name}')
-        self.reader = easyocr.Reader([], gpu=(self.dev == 'cuda'), recognizer=False)
+        self.reader = easyocr.Reader(
+            [],
+            gpu=(self.dev == 'cuda'),
+            recognizer=False,
+            model_storage_directory=str(self.data_dir)
+        )
 
     def unload(self) -> None:
         """Unload the model from memory."""
