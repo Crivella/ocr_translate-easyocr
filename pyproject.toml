@@ -13,72 +13,19 @@ readme = "README.md"
 license = { file = "LICENSE.txt" }
 classifiers = [
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.10",
 ]
 keywords = ["django", "translation"]
-requires-python = ">=3.12"
-# easyocr==1.7.2
-# ├── torch [required: Any, installed: 2.7.1]
-# │   ├── filelock [required: Any, installed: 3.18.0]
-# │   ├── typing_extensions [required: >=4.10.0, installed: 4.14.1]
-# │   ├── sympy [required: >=1.13.3, installed: 1.14.0]
-# │   │   └── mpmath [required: >=1.1.0,<1.4, installed: 1.3.0]
-# │   ├── networkx [required: Any, installed: 3.5]
-# │   ├── Jinja2 [required: Any, installed: 3.1.6]
-# │   │   └── MarkupSafe [required: >=2.0, installed: 3.0.2]
-# │   ├── fsspec [required: Any, installed: 2025.7.0]
-# │   └── setuptools [required: Any, installed: 80.9.0]
-# ├── torchvision [required: >=0.5, installed: 0.22.1]
-# │   ├── numpy [required: Any, installed: 2.2.6]
-# │   ├── torch [required: ==2.7.1, installed: 2.7.1]
-# │   │   ├── filelock [required: Any, installed: 3.18.0]
-# │   │   ├── typing_extensions [required: >=4.10.0, installed: 4.14.1]
-# │   │   ├── sympy [required: >=1.13.3, installed: 1.14.0]
-# │   │   │   └── mpmath [required: >=1.1.0,<1.4, installed: 1.3.0]
-# │   │   ├── networkx [required: Any, installed: 3.5]
-# │   │   ├── Jinja2 [required: Any, installed: 3.1.6]
-# │   │   │   └── MarkupSafe [required: >=2.0, installed: 3.0.2]
-# │   │   ├── fsspec [required: Any, installed: 2025.7.0]
-# │   │   └── setuptools [required: Any, installed: 80.9.0]
-# │   └── pillow [required: >=5.3.0,!=8.3.*, installed: 11.3.0]
-# ├── opencv-python-headless [required: Any, installed: 4.12.0.88]
-# │   └── numpy [required: >=2,<2.3.0, installed: 2.2.6]
-# ├── scipy [required: Any, installed: 1.16.1]
-# │   └── numpy [required: >=1.25.2,<2.6, installed: 2.2.6]
-# ├── numpy [required: Any, installed: 2.2.6]
-# ├── pillow [required: Any, installed: 11.3.0]
-# ├── scikit-image [required: Any, installed: 0.25.2]
-# │   ├── numpy [required: >=1.24, installed: 2.2.6]
-# │   ├── scipy [required: >=1.11.4, installed: 1.16.1]
-# │   │   └── numpy [required: >=1.25.2,<2.6, installed: 2.2.6]
-# │   ├── networkx [required: >=3.0, installed: 3.5]
-# │   ├── pillow [required: >=10.1, installed: 11.3.0]
-# │   ├── imageio [required: >=2.33,!=2.35.0, installed: 2.37.0]
-# │   │   ├── numpy [required: Any, installed: 2.2.6]
-# │   │   └── pillow [required: >=8.3.2, installed: 11.3.0]
-# │   ├── tifffile [required: >=2022.8.12, installed: 2025.6.11]
-# │   │   └── numpy [required: Any, installed: 2.2.6]
-# │   ├── packaging [required: >=21, installed: 25.0]
-# │   └── lazy_loader [required: >=0.4, installed: 0.4]
-# │       └── packaging [required: Any, installed: 25.0]
-# ├── python-bidi [required: Any, installed: 0.6.6]
-# ├── PyYAML [required: Any, installed: 6.0.2]
-# ├── shapely [required: Any, installed: 2.1.1]
-# │   └── numpy [required: >=1.21, installed: 2.2.6]
-# ├── pyclipper [required: Any, installed: 1.3.0.post6]
-# └── ninja [required: Any, installed: 1.11.1.4]
+requires-python = ">=3.10"
 dependencies = [
     "django-ocr_translate>=0.7.0,<1.0",
+
+    "torch~=2.8.0",
+    "torchvision~=0.23.0",
+
+    "scipy~=1.15.3",
+
     "easyocr~=1.7.2",
-
-    "torch~=2.7.1",
-    "torchvision~=0.22.1",
-
-    "scipy~=1.16.1",
-    "scikit-image~=0.25.2",
-    "PyYAML~=6.0.2",
-    "ninja~=1.11.1.4",
 ]
 
 [project.urls]
@@ -89,16 +36,16 @@ release = [
     "flit",
 ]
 tests = [
-    "pytest~=8.2.0",
-    "pytest-cov~=6.2.1",
-    "pytest-django~=4.11.1",
-    "pytest-regressions~=2.8.1",
+    "pytest",
+    "pytest-cov",
+    "pytest-regressions",
+    "pytest-django",
 ]
 pre-commit = [
-    "pre-commit~=4.2.0",
-    "pylint~=3.3.7",
-    "pylint-pytest~=1.1.8",
-    "pylint-django~=2.6.1",
+    "pre-commit",
+    "pylint",
+    "pylint-pytest",
+    "pylint-django",
 ]
 
 [project.entry-points."ocr_translate.box_data"]
