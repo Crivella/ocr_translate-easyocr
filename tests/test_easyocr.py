@@ -94,6 +94,7 @@ def test_env_base_dir(monkeypatch, prefix, mock_called):
     assert not prefix.exists()
     monkeypatch.setattr(easyocr.easyocr, 'Reader', mock_called)
     cls = easyocr.EasyOCRBoxModel()
+    cls.DISABLE_LOAD_EVENTS = True
     cls.load()
     assert mock_called.called
     assert mock_called.kwargs['model_storage_directory'] == str(prefix)

@@ -66,7 +66,9 @@ def easyocr_model() -> easyocr.EasyOCRBoxModel:
         'entrypoint': 'easyocr.box'
     }
 
-    return easyocr.EasyOCRBoxModel(**easyocr_model_dict)
+    res = easyocr.EasyOCRBoxModel(**easyocr_model_dict)
+    res.DISABLE_LOAD_EVENTS = True
+    return res
 
 @pytest.fixture(scope='function')
 def mock_called(request):
