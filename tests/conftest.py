@@ -67,7 +67,7 @@ def easyocr_model() -> easyocr.EasyOCRBoxModel:
     }
 
     res = easyocr.EasyOCRBoxModel(**easyocr_model_dict)
-    res.DISABLE_LOAD_EVENTS = True  # pylint: disable=invalid-name
+    res.DISABLE_LOAD_EVENTS = True
     return res
 
 @pytest.fixture(scope='function')
