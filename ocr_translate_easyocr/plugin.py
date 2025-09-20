@@ -103,7 +103,8 @@ class EasyOCRBoxModel(m.OCRBoxModel):
             [],
             gpu=(self.dev == 'cuda'),
             recognizer=False,
-            model_storage_directory=str(self.data_dir)
+            model_storage_directory=self.data_dir.as_posix(),
+            user_network_directory=(self.data_dir / 'user_network').as_posix()
         )
 
     def unload(self) -> None:

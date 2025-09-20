@@ -14,12 +14,21 @@ license = { file = "LICENSE.txt" }
 classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 keywords = ["django", "translation"]
 requires-python = ">=3.10"
 dependencies = [
-    "django-ocr_translate>=0.5.0,<1.0",
-    "easyocr~=1.7.0",
+    "django-ocr_translate>=0.7.0,<1.0",
+
+    "torch~=2.8.0",
+    "torchvision~=0.23.0",
+
+    "scipy~=1.15.3",
+
+    "easyocr~=1.7.2",
 ]
 
 [project.urls]
@@ -32,14 +41,14 @@ release = [
 tests = [
     "pytest",
     "pytest-cov",
-    "pytest-regressions~=2.4",
-    "pytest-django~=4.5.2",
+    "pytest-regressions",
+    "pytest-django",
 ]
 pre-commit = [
-    "pre-commit~=3.3.3",
-    "pylint~=2.17.4",
-    "pylint-pytest~=1.1.2",
-    "pylint-django~=2.5.3",
+    "pre-commit",
+    "pylint",
+    "pylint-pytest",
+    "pylint-django",
 ]
 
 [project.entry-points."ocr_translate.box_data"]
@@ -60,7 +69,7 @@ exclude = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 DJANGO_SETTINGS_MODULE = "settings"
-log_cli = 1
+log_cli = true
 pythonpath = ["./tests"]
 
 [tool.pylint.main]
@@ -87,6 +96,7 @@ good-names = [
     "i", "j",
     "k", "v", "X", "Y",
     "f",
+    "DISABLE_LOAD_EVENTS",
 ]
 
 [tool.pylint.design]
